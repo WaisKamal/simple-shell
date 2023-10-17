@@ -130,14 +130,15 @@ void evaluateEnvironmentVariables(struct EnvironmentVariables* envVars, char* cm
                     int lastPos = strlen(cmdString) + extraSpace + 1;
                     for (int j = lastPos; j > dollarSignPos + envVarLength + extraSpace; j--) {
                         cmdString[j] = cmdString[j - extraSpace];
+                        // This is here for debugging only
                         cmdString[j - extraSpace] = '-';
                     }
-                    printf("%d\n", strlen(cmdString));
                 } else if (extraSpace < 0) {
-                    int firstPos = dollarSignPos;
+                    int lastPos = strlen(cmdString);
                     // Note: subtracting becuase extraSpace is negative
-                    for (int j = firstPos; j < firstPos - extraSpace; j++) {
+                    for (int j = dollarSignPos + strlen(envVarValue); j <= lastPos + extraSpace; j++) {
                         cmdString[j] = cmdString[j - extraSpace];
+                        cmdString[j - extraSpace] = '-';
                     }
                 }
                 for (int j = 0; j < strlen(envVarValue); j++) {
@@ -151,5 +152,4 @@ void evaluateEnvironmentVariables(struct EnvironmentVariables* envVars, char* cm
             }
         }
     }
-    return cmdString;
 }
