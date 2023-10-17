@@ -27,6 +27,6 @@ char* getEnvironmentVariable(struct EnvironmentVariables* envVars, char* name);
 void exec_setenv(struct EnvironmentVariables* envVars, char* cmdString);
 
 // Executes the unsetenv command
-void exec_unsetenv(struct EnvironmentVariables* envVars, char* cmdString)ك
+void exec_unsetenv(struct EnvironmentVariables* envVars, char* cmdString);
 
 #endif

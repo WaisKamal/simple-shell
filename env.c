@@ -40,15 +40,20 @@ void setEnvironmentVariable(struct EnvironmentVariables* envVars, char* name, ch
 }
 
 // Deletes an environment variable
-void removeEnvironmentVariable(struct EnvironmentVariables* envVars, char* name) {
+void removeEnvironmentVariable(struct EnvironmentVariables* envVars, char* cmdString) {
+    char* cmdStringCopy = malloc(strlen(cmdString) * sizeof(char));
+    strcpy(cmdStringCopy, cmdString);
+    char* commandName = strtok(cmdStringCopy, " ");
+    char* varName = strtok(NULL, " ");
     // Check if environment variable exists
     int varIndex = -1;
     for (int i = 0; i < envVars->count; i++) {
-        if (!strcmp(envVars->variables[i].name, name)) {
+        if (!strcmp(envVars->variables[i].name, varName)) {
             varIndex = i;
             break;
         }
     }
+    if (varIndex == -1) return;
     // Do nothing if variable does not exist, otherwise remove variable
     struct Variable* newEnvVars = malloc((envVars->count - 1) * sizeof(struct Variable));
     for (int i = 0; i < varIndex; i++) {
