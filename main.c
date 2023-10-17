@@ -93,9 +93,12 @@ int main(int argc, char** argv, char** env) {
     printf("> %s> ", cwdString);
 
     while (true) {
+        // Read command from stdin
         fgets(cmdString, sizeof cmdString, stdin);
         // Remove trailing '\n' from command
         cmdString[strcspn(cmdString, "\n")] = 0;
+        // Replace environment variables in cmdString
+        evaluateEnvironmentVariables(&envVars, cmdString);
         // strcpy(cmdString, "cd aaa/bbb/ccc/ddd");
         char* commandName = getCommandName(cmdString, sizeof cmdString);
         // Process command

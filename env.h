@@ -29,4 +29,7 @@ void exec_setenv(struct EnvironmentVariables* envVars, char* cmdString);
 // Executes the unsetenv command
 void exec_unsetenv(struct EnvironmentVariables* envVars, char* cmdString);
 
+// Replaces environment variables in command string with their respoective values
+void evaluateEnvironmentVariables(struct EnvironmentVariables* envVars, char* cmdString);
+
 #endif

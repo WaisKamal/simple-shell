@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include "env.h"
 
@@ -102,4 +103,53 @@ void exec_setenv(struct EnvironmentVariables* envVars, char* cmdString) {
 
 void exec_unsetenv(struct EnvironmentVariables* envVars, char* cmdString) {
     removeEnvironmentVariable(envVars, cmdString);
+}
+
+void evaluateEnvironmentVariables(struct EnvironmentVariables* envVars, char* cmdString) {
+    // The extra space required for the parsed cmdString
+    int extraChars = 0;
+    // Position of dollar sign (-1 if no dollar sign encountered)
+    int dollarSignPos = -1;
+    // The current length of the command string
+    int cmdStringLength = strlen(cmdString);
+    for (int i = 0; i < cmdStringLength; i++) {
+        if (cmdString[i] == '$') {
+            dollarSignPos = i;
+        } else if (cmdString[i] == ' ' || i == strlen(cmdString) - 1) {
+            if (dollarSignPos != -1) {
+                // Environment variable encountered
+                int envVarLength = i - dollarSignPos - (i != strlen(cmdString) - 1);
+                char* envVarName = malloc((envVarLength + 1) * sizeof(char));
+                strncpy(envVarName, cmdString + dollarSignPos + 1, envVarLength);
+
+                char* envVarValue = getEnvironmentVariable(envVars, envVarName);
+                // Subtracting 1 because the dollar sign will be replaced
+                int extraSpace = strlen(envVarValue) - envVarLength - 1;
+                if (extraSpace > 0) {
+                    // Accounting for null-terminator, so strlen instead of strlen - 1
+                    int lastPos = strlen(cmdString) + extraSpace + 1;
+                    for (int j = lastPos; j > dollarSignPos + envVarLength + extraSpace; j--) {
+                        cmdString[j] = cmdString[j - extraSpace];
+                        cmdString[j - extraSpace] = '-';
+                    }
+                    printf("%d\n", strlen(cmdString));
+                } else if (extraSpace < 0) {
+                    int firstPos = dollarSignPos;
+                    // Note: subtracting becuase extraSpace is negative
+                    for (int j = firstPos; j < firstPos - extraSpace; j++) {
+                        cmdString[j] = cmdString[j - extraSpace];
+                    }
+                }
+                for (int j = 0; j < strlen(envVarValue); j++) {
+                    cmdString[j + dollarSignPos] = envVarValue[j];
+                }
+                // Move the string pointer to the last location and update length
+                cmdStringLength += extraSpace;
+                i = strlen(envVarValue) + dollarSignPos;
+                // Reset dollarSignPos
+                dollarSignPos = -1;
+            }
+        }
+    }
+    return cmdString;
 }
