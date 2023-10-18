@@ -37,6 +37,17 @@ void removeExtraSpaces(char* cmdString) {
     strcpy(cmdString, newCmdString);
 }
 
+// Returns an array of arguments from a command string
+char* getArgs(char* cmdString) {
+    int argCount = 0;
+    int quotePos = -1;
+    for (int i = 0; i < strlen(cmdString); i++) {
+        if (cmdString[i] == '"') {
+            quotePos = i;
+        }
+    }
+}
+
 int main(int argc, char** argv, char** env) {
     // Read environment variables
     struct VariableStore envVars;
@@ -88,6 +99,8 @@ int main(int argc, char** argv, char** env) {
             exec_alias(&aliasStore, cmdString);
         } else if (!strcmp(commandName, "exit")) {
             return 0;
+        } else {
+            // system(cmdString);
         }
         printf("> %s> ", cwdString);
     }
