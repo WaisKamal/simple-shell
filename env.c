@@ -103,10 +103,10 @@ void evaluateEnvironmentVariables(struct VariableStore* envVars, char* cmdString
         } else if (cmdString[i] == ' ' || i == strlen(cmdString) - 1) {
             if (dollarSignPos != -1) {
                 // Environment variable encountered
-                int envVarLength = i - dollarSignPos - (i != strlen(cmdString) - 1);
+                bool isLastChar = (i == strlen(cmdString) - 1 && cmdString[i] == ' ');
+                int envVarLength = i - dollarSignPos - isLastChar;
                 char* envVarName = malloc((envVarLength + 1) * sizeof(char));
                 strncpy(envVarName, cmdString + dollarSignPos + 1, envVarLength);
-
                 char* envVarValue = getEnvironmentVariable(envVars, envVarName);
                 // Subtracting 1 because the dollar sign will be replaced
                 int extraSpace = strlen(envVarValue) - envVarLength - 1;
