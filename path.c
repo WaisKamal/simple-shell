@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "path.h"
 #include "string_utils.h"
 
@@ -72,6 +73,18 @@ char* exec_cd(char* cmdString, struct Path* cwd) {
     char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
     strcpy(cmdStringCopy, cmdString);
     char* commandName = strtok(cmdStringCopy, " ");
+    char* fullDirName = substr(cmdString, strlen(commandName) + 1, strlen(cmdString) - 1);
+    // Check if directory exists
+    #ifndef WINDOWS
+    DIR* dir = opendir(fullDirName);
+    if (ENOENT == errno) {
+        printf("Directory not found.\n");
+        return "";
+    } else if (!dir) {
+        printf("An error occured. Could not open directory.\n");
+        return "";
+    }
+    #endif
     char* currentDirName = strtok(NULL, "/\n");
     do {
         char* trimmedDirName = trim(currentDirName);

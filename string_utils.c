@@ -23,10 +23,10 @@ void shiftString(char* str, int from, int to, int shiftAmount) {
 // Returns a dynamically allocated substring from the given string
 char* substr(char* str, int from, int to) {
     char* newStr = malloc(to - from + 2);
-    for (int i = 0; i <= to - from + 1; i++) {
+    for (int i = 0; i < to - from + 1; i++) {
         newStr[i] = str[i + from];
     }
-    newStr[to + 1] = '\0';
+    newStr[to - from + 1] = '\0';
     return newStr;
 }
 

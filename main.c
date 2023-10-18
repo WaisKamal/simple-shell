@@ -38,14 +38,76 @@ void removeExtraSpaces(char* cmdString) {
 }
 
 // Returns an array of arguments from a command string
-char* getArgs(char* cmdString) {
+char** getArgs(char* cmdString) {
     int argCount = 0;
     int quotePos = -1;
+    int argStartPos = -1;
+    // Count arguments
     for (int i = 0; i < strlen(cmdString); i++) {
-        if (cmdString[i] == '"') {
-            quotePos = i;
+        if (cmdString[i] == ' ') {
+            if (quotePos == -1 && argStartPos != -1) {
+                // Argument found in [argStartPos, i - 1]
+                argCount++;
+                argStartPos = quotePos = -1;
+            }
+        } else if (cmdString[i] == '"' && (i == 0 || cmdString[i - 1] != '\\')) {
+            if (quotePos == -1) {
+                quotePos = argStartPos = i;
+            } else {
+                // Argument found in [quotePos + 1, i - 1]
+                argCount++;
+                quotePos = argStartPos = -1;
+            }
+        } else if (i == strlen(cmdString) - 1) {
+            if (argStartPos != -1) {
+                // Argument found in [argStartPos, i]
+                argCount++;
+                quotePos = argStartPos = -1;
+            }
+        } else {
+            if (argStartPos == -1) {
+                argStartPos = i;
+            }
         }
     }
+    // Allocate argument array
+    char** args = malloc((argCount + 1) * sizeof(char*));
+    args[argCount] = "";
+    quotePos = argStartPos = -1;
+    argCount = 0;
+    // Extract arguments
+    for (int i = 0; i < strlen(cmdString); i++) {
+        if (cmdString[i] == ' ') {
+            if (quotePos == -1 && argStartPos != -1) {
+                // Argument found in [argStartPos, i - 1]
+                args[argCount] = substr(cmdString, argStartPos, i - 1);
+                argCount++;
+                argStartPos = quotePos = -1;
+            }
+        } else if (cmdString[i] == '"' && (i == 0 || cmdString[i - 1] != '\\')) {
+            if (quotePos == -1) {
+                quotePos = i;
+                argStartPos = i + 1;
+            } else {
+                // Argument found in [quotePos + 1, i - 1]
+                args[argCount] = substr(cmdString, quotePos + 1, i - 1);
+                argCount++;
+                quotePos = argStartPos = -1;
+            }
+        } else if (i == strlen(cmdString) - 1) {
+            if (argStartPos != -1) {
+                // Argument found in [argStartPos, i]
+                args[argCount] = substr(cmdString, argStartPos, i);
+                argCount++;
+                quotePos = argStartPos = -1;
+            }
+        } else {
+            if (argStartPos == -1) {
+                argStartPos = i;
+            }
+        }
+    }
+    return args;
 }
 
 int main(int argc, char** argv, char** env) {
@@ -87,10 +149,13 @@ int main(int argc, char** argv, char** env) {
         // Process command
         if (!strcmp(commandName, "cd")) {
             // Copy the new cwd string and deallocate the relevant memory block
-            char* newCwdString = exec_cd(cmdString, cwd);
-            cwdString = malloc((strlen(newCwdString) + 1) * sizeof(char));
-            strcpy(cwdString, newCwdString);
-            free(newCwdString);
+            char* cdResult = exec_cd(cmdString, cwd);
+            if (strlen(cdResult) > 0) {
+                char* newCwdString = cdResult;
+                cwdString = malloc((strlen(newCwdString) + 1) * sizeof(char));
+                strcpy(cwdString, newCwdString);
+                free(newCwdString);
+            }
         } else if (!strcmp(commandName, "env") || !strcmp(commandName, "setenv")) {
             exec_setenv(&envVars, cmdString);
         } else if (!strcmp(commandName, "unsetenv")) {

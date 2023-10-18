@@ -3,6 +3,11 @@
 
 #include <stdlib.h>
 
+// Directives that are only available under UNIX
+#ifndef WINDOWS
+#include <dirent.h>
+#endif
+
 struct Path {
     struct Dir* firstDir;
     struct Dir* lastDir;
