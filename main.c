@@ -111,11 +111,11 @@ char** getArgs(char* cmdString) {
 }
 
 int main(int argc, char** argv, char** env) {
-    return 0;
-    
     // Read environment variables
     struct VariableStore envVars;
     loadEnvironmentVariables(env, &envVars);
+
+    return 0;
 
     // Initialize alias store
     struct VariableStore aliasStore;
