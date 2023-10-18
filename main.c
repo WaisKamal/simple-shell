@@ -2,12 +2,13 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include "string_utils.h"
 #include "path.h"
 #include "env.h"
 
-char* getCommandName(char* cmdString, int length) {
+char* getCommandName(char* cmdString) {
     // Copy cmdString because strtok mutates the passed string
-    char* cmdStringCopy = malloc(length * sizeof(char));
+    char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
     strcpy(cmdStringCopy, cmdString);
     char* commandName = strtok(cmdStringCopy, " ");
     char* result = malloc(sizeof commandName);
@@ -19,7 +20,7 @@ char* getCommandName(char* cmdString, int length) {
 // Builds the cwd linked list from the current directory string
 void buildCwd(struct Path* cwd, char* cwdString) {
     // Copy cwdString
-    char* cwdStringCopy = malloc(strlen(cwdString) * sizeof(char));
+    char* cwdStringCopy = malloc((strlen(cwdString) + 1) * sizeof(char));
     strcpy(cwdStringCopy, cwdString);
     char* currentDirName = strtok(cwdStringCopy, "/");
     addDirectoryToPath(cwd, currentDirName);
@@ -41,7 +42,7 @@ char* buildCwdString(struct Path* cwd) {
         currentDir = currentDir->nextDir;
     }
     // Now build the cwd string
-    char* cwdString = malloc(cwdStrLength * sizeof(char));
+    char* cwdString = malloc((cwdStrLength + 1) * sizeof(char));
     currentDir = cwd->firstDir;
     strcpy(cwdString, currentDir->dirName);
     int currentIndex = strlen(currentDir->dirName);
@@ -56,7 +57,7 @@ char* buildCwdString(struct Path* cwd) {
 
 // Executes the cd command and returns the new cwd string
 char* exec_cd(char* cmdString, struct Path* cwd) {
-    char* cmdStringCopy = malloc(strlen(cmdString) * sizeof(char));
+    char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
     strcpy(cmdStringCopy, cmdString);
     char* commandName = strtok(cmdStringCopy, " ");
     char* currentDirName = strtok(NULL, "/\n");
@@ -100,12 +101,12 @@ int main(int argc, char** argv, char** env) {
         // Replace environment variables in cmdString
         evaluateEnvironmentVariables(&envVars, cmdString);
         // strcpy(cmdString, "cd aaa/bbb/ccc/ddd");
-        char* commandName = getCommandName(cmdString, sizeof cmdString);
+        char* commandName = getCommandName(cmdString);
         // Process command
         if (!strcmp(commandName, "cd")) {
             // Copy the new cwd string and deallocate the relevant memory block
             char* newCwdString = exec_cd(cmdString, cwd);
-            cwdString = malloc(strlen(newCwdString) * sizeof(char));
+            cwdString = malloc((strlen(newCwdString) + 1) * sizeof(char));
             strcpy(cwdString, newCwdString);
             free(newCwdString);
         } else if (!strcmp(commandName, "setenv")) {

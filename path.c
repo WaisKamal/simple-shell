@@ -13,7 +13,7 @@ void addDirectoryToPath(struct Path* path, char* dirName) {
         path->lastDir->nextDir = NULL;
     } else {
         path->firstDir = malloc(sizeof(struct Dir));
-        path->firstDir->dirName = malloc(strlen(dirName) * sizeof(char));
+        path->firstDir->dirName = malloc((strlen(dirName) + 1) * sizeof(char));
         strcpy(path->firstDir->dirName, dirName);
         path->lastDir = path->firstDir;
         path->lastDir->nextDir = NULL;
