@@ -111,6 +111,8 @@ char** getArgs(char* cmdString) {
 }
 
 int main(int argc, char** argv, char** env) {
+    return 0;
+    
     // Read environment variables
     struct VariableStore envVars;
     loadEnvironmentVariables(env, &envVars);
@@ -126,8 +128,6 @@ int main(int argc, char** argv, char** env) {
     struct Path* cwd;
     cwd->firstDir = cwd->lastDir = NULL;
     buildCwd(cwd, "C:/Users/Wais/Desktop/simple-shell");
-
-    return 0;
 
     // Initialize command string with maximum 1024 characters
     char cmdString[1024];
