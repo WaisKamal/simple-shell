@@ -123,11 +123,9 @@ int main(int argc, char** argv, char** env) {
     char* cwdString = "C:/Users/Wais/Desktop/simple-shell";
 
     // Initialize cwd
-    struct Path* cwd;
-    cwd->firstDir = cwd->lastDir = NULL;
-    buildCwd(cwd, "C:/Users/Wais/Desktop/simple-shell");
-
-    return 0;
+    struct Path cwd;
+    cwd.firstDir = cwd.lastDir = NULL;
+    buildCwd(&cwd, "C:/Users/Wais/Desktop/simple-shell");
 
     // Initialize command string with maximum 1024 characters
     char cmdString[1024];
@@ -151,7 +149,7 @@ int main(int argc, char** argv, char** env) {
         // Process command
         if (!strcmp(commandName, "cd")) {
             // Copy the new cwd string and deallocate the relevant memory block
-            char* cdResult = exec_cd(cmdString, cwd);
+            char* cdResult = exec_cd(cmdString, &cwd);
             if (strlen(cdResult) > 0) {
                 char* newCwdString = cdResult;
                 cwdString = malloc((strlen(newCwdString) + 1) * sizeof(char));

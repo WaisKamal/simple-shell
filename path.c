@@ -6,9 +6,9 @@
 #include "string_utils.h"
 
 // Directives that are only available under UNIX
-// #ifndef WINDOWS
-// #include <dirent.h>
-// #endif
+#ifndef WINDOWS
+#include <dirent.h>
+#endif
 
 // Adds a directory to the end of the path
 void addDirectoryToPath(struct Path* path, char* dirName) {
@@ -81,18 +81,18 @@ char* exec_cd(char* cmdString, struct Path* cwd) {
     char* commandName = strtok(cmdStringCopy, " ");
     char* fullDirName = substr(cmdString, strlen(commandName) + 1, strlen(cmdString) - 1);
     // Check if directory exists
-    // #ifndef WINDOWS
-    // DIR* dir = opendir(fullDirName);
-    // if (errno == ENOENT) {
-    //     printf("Directory not found.\n");
-    //     free(cmdStringCopy);
-    //     return "";
-    // } else if (!dir) {
-    //     printf("An error occured. Could not open directory.\n");
-    //     free(cmdStringCopy);
-    //     return "";
-    // }
-    // #endif
+    #ifndef WINDOWS
+    DIR* dir = opendir(fullDirName);
+    if (errno == ENOENT) {
+        printf("Directory not found.\n");
+        free(cmdStringCopy);
+        return "";
+    } else if (!dir) {
+        printf("An error occured. Could not open directory.\n");
+        free(cmdStringCopy);
+        return "";
+    }
+    #endif
     char* currentDirName = strtok(NULL, "/\n");
     do {
         char* trimmedDirName = trim(currentDirName);
