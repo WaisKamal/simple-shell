@@ -136,7 +136,7 @@ int main(int argc, char** argv, char** env) {
     // Initialize cwd
     struct Path cwd;
     cwd.firstDir = cwd.lastDir = NULL;
-    buildCwd(&cwd, "C:/Users/Wais/Desktop/simple-shell");
+    buildCwd(&cwd, cwdString);
 
     // Initialize command string with maximum 1024 characters
     char cmdString[1024];
