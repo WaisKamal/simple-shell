@@ -127,10 +127,10 @@ int main(int argc, char** argv, char** env) {
     cwd->firstDir = cwd->lastDir = NULL;
     buildCwd(cwd, "C:/Users/Wais/Desktop/simple-shell");
 
+    return 0;
+
     // Initialize command string with maximum 1024 characters
     char cmdString[1024];
-
-    return 0;
 
     // Print the starting prompt
     printf("> %s> ", cwdString);
