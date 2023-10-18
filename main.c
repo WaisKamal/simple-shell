@@ -172,7 +172,7 @@ int main(int argc, char** argv, char** env) {
         } else {
             #ifndef WINDOWS
             char** args = getArgs(cmdString);
-            execve(commandName, args);
+            execv(commandName, args);
             #endif
         }
         printf("> %s> ", cwdString);
