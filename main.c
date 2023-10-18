@@ -192,7 +192,7 @@ int main(int argc, char** argv, char** env) {
                     kill(0, 9);
                 }
                 void exitParent() {
-                    kill(pid, 9)
+                    kill(pid, 9);
                 }
                 signal(SIGINT, exitChild);
                 waitpid(pid, 0, 0);
