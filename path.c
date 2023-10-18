@@ -5,6 +5,11 @@
 #include "path.h"
 #include "string_utils.h"
 
+// Directives that are only available under UNIX
+#ifndef WINDOWS
+#include <dirent.h>
+#endif
+
 // Adds a directory to the end of the path
 void addDirectoryToPath(struct Path* path, char* dirName) {
     if (path->firstDir != NULL) {
