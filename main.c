@@ -127,7 +127,8 @@ int main(int argc, char** argv, char** env) {
     aliasStore.count = 0;
 
     // To be replaced with POSIX getcwd()
-    char cwdString[1024];
+    char* cwdString;
+    malloc(1024 * sizeof(char));
     #ifndef WINDOWS
     getcwd(cwdString, sizeof(cwdString));
     #endif
