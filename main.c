@@ -172,9 +172,13 @@ int main(int argc, char** argv, char** env) {
         } else {
             #ifndef WINDOWS
             char** args = getArgs(cmdString);
-            fork();
-            execv(commandName, args);
-            free(args);
+            pid_t pid = fork();
+            if (pid == 0) {
+                execv(commandName, args);
+                exit(127);
+            } else {
+                waitpid(pid, 0, 0)
+            }
             #endif
         }
         printf("> %s> ", cwdString);
