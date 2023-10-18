@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "path.h"
+#include "string_utils.h"
 
 // Adds a directory to the end of the path
 void addDirectoryToPath(struct Path* path, char* dirName) {
@@ -73,12 +74,15 @@ char* exec_cd(char* cmdString, struct Path* cwd) {
     char* commandName = strtok(cmdStringCopy, " ");
     char* currentDirName = strtok(NULL, "/\n");
     do {
-        if (strcmp(currentDirName, "..")) {
-            addDirectoryToPath(cwd, currentDirName);
+        char* trimmedDirName = trim(currentDirName);
+        if (strcmp(trimmedDirName, "..")) {
+            // Append a new directory to the path
+            addDirectoryToPath(cwd, trimmedDirName);
         } else {
             // Navigate back to the previous directory
             removeLastDirectory(cwd);
         }
+        free(trimmedDirName);
         currentDirName = strtok(NULL, "/");
     } while (currentDirName != NULL);
     char* newCwdString = buildCwdString(cwd);

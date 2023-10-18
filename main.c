@@ -19,6 +19,24 @@ char* getCommandName(char* cmdString) {
     return result;
 }
 
+void removeExtraSpaces(char* cmdString) {
+    char* newCmdString = malloc((strlen(cmdString) + 1) * sizeof(char));
+    bool inQuote = false;
+    int ptr = 0;
+    for (int i = 0; i < strlen(cmdString); i++) {
+        if (cmdString[i] == '"') {
+            inQuote = !inQuote;
+        } else if (cmdString[i] == ' ') {
+            if (!inQuote && (i == 0 || cmdString[i - 1] == ' ')) {
+                continue;
+            }
+        }
+        newCmdString[ptr++] = cmdString[i];
+    }
+    newCmdString[ptr] = '\0';
+    strcpy(cmdString, newCmdString);
+}
+
 int main(int argc, char** argv, char** env) {
     // Read environment variables
     struct VariableStore envVars;
@@ -47,6 +65,8 @@ int main(int argc, char** argv, char** env) {
         fgets(cmdString, sizeof cmdString, stdin);
         // Remove trailing '\n' from command
         cmdString[strcspn(cmdString, "\n")] = 0;
+        // Remove extra spaces
+        removeExtraSpaces(cmdString);
         // Evaluate alias if found
         evaluateAlias(&aliasStore, cmdString);
         // Replace environment variables in cmdString
