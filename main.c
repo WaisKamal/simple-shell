@@ -190,6 +190,7 @@ int main(int argc, char** argv, char** env) {
             } else {
                 void ctrlCHandler() {
                     kill(pid, 9);
+                    exit(0);
                 }
                 signal(SIGINT, ctrlCHandler);
                 waitpid(pid, 0, 0);
