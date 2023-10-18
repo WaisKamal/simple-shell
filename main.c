@@ -196,6 +196,7 @@ int main(int argc, char** argv, char** env) {
                 }
                 signal(SIGINT, exitChild);
                 waitpid(pid, 0, 0);
+                signal(SIGINT, exitParent);
             }
             #endif
         }
