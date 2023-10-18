@@ -7,10 +7,12 @@
 #include "path.h"
 #include "env.h"
 #include "alias.h"
+#include <sys/types.h>
 
 // UNIX-specific directives
 #ifndef WINDOWS
 #include <unistd.h>
+#include <sys/wait.h>
 #endif
 
 char* getCommandName(char* cmdString) {
