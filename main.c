@@ -189,10 +189,10 @@ int main(int argc, char** argv, char** env) {
                 exit(127);
             } else {
                 void exitChild() {
-                    kill(0, 9);
+                    kill(pid, 9);
                 }
                 void exitParent() {
-                    kill(pid, 9);
+                    kill(0, 9);
                 }
                 signal(SIGINT, exitChild);
                 waitpid(pid, 0, 0);
