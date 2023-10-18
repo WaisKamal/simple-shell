@@ -20,4 +20,13 @@ void addDirectoryToPath(struct Path* path, char* dirName);
 // Removes the last directory in the path
 void removeLastDirectory(struct Path* path);
 
+// Builds the cwd linked list from the current directory string
+void buildCwd(struct Path* cwd, char* cwdString);
+
+// Builds cwd string from Path* cwd struct;
+char* buildCwdString(struct Path* cwd);
+
+// Executes the cd command and returns the new cwd string
+char* exec_cd(char* cmdString, struct Path* cwd);
+
 #endif

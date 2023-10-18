@@ -2,9 +2,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include "variable_store.h"
 #include "string_utils.h"
 #include "path.h"
 #include "env.h"
+#include "alias.h"
 
 char* getCommandName(char* cmdString) {
     // Copy cmdString because strtok mutates the passed string
@@ -17,67 +19,14 @@ char* getCommandName(char* cmdString) {
     return result;
 }
 
-// Builds the cwd linked list from the current directory string
-void buildCwd(struct Path* cwd, char* cwdString) {
-    // Copy cwdString
-    char* cwdStringCopy = malloc((strlen(cwdString) + 1) * sizeof(char));
-    strcpy(cwdStringCopy, cwdString);
-    char* currentDirName = strtok(cwdStringCopy, "/");
-    addDirectoryToPath(cwd, currentDirName);
-    while (currentDirName != NULL) {
-        currentDirName = strtok(NULL, "/");
-        if (currentDirName != NULL) {
-            addDirectoryToPath(cwd, currentDirName);
-        }
-    }
-}
-
-// Builds cwd string from Path* cwd struct;
-char* buildCwdString(struct Path* cwd) {
-    // Calculate the cwd string length
-    struct Dir* currentDir = cwd->firstDir;
-    int cwdStrLength = strlen(currentDir->dirName);
-    while (currentDir->nextDir != NULL) {
-        cwdStrLength += strlen(currentDir->nextDir->dirName) + 1;
-        currentDir = currentDir->nextDir;
-    }
-    // Now build the cwd string
-    char* cwdString = malloc((cwdStrLength + 1) * sizeof(char));
-    currentDir = cwd->firstDir;
-    strcpy(cwdString, currentDir->dirName);
-    int currentIndex = strlen(currentDir->dirName);
-    while (currentDir->nextDir != NULL) {
-        strcpy(cwdString + currentIndex, "/");
-        strcpy(cwdString + currentIndex + 1, currentDir->nextDir->dirName);
-        currentIndex += strlen(currentDir->nextDir->dirName) + 1;
-        currentDir = currentDir->nextDir;
-    }
-    return cwdString;
-}
-
-// Executes the cd command and returns the new cwd string
-char* exec_cd(char* cmdString, struct Path* cwd) {
-    char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
-    strcpy(cmdStringCopy, cmdString);
-    char* commandName = strtok(cmdStringCopy, " ");
-    char* currentDirName = strtok(NULL, "/\n");
-    do {
-        if (strcmp(currentDirName, "..")) {
-            addDirectoryToPath(cwd, currentDirName);
-        } else {
-            // Navigate back to the previous directory
-            removeLastDirectory(cwd);
-        }
-        currentDirName = strtok(NULL, "/");
-    } while (currentDirName != NULL);
-    char* newCwdString = buildCwdString(cwd);
-    return newCwdString;
-}
-
 int main(int argc, char** argv, char** env) {
     // Read environment variables
-    struct EnvironmentVariables envVars;
+    struct VariableStore envVars;
     loadEnvironmentVariables(env, &envVars);
+
+    // Initialize alias store
+    struct VariableStore aliasStore;
+    aliasStore.count = 0;
 
     // To be replaced with POSIX getcwd()
     char* cwdString = "C:/Users/Wais/Desktop/simple-shell";
@@ -98,6 +47,8 @@ int main(int argc, char** argv, char** env) {
         fgets(cmdString, sizeof cmdString, stdin);
         // Remove trailing '\n' from command
         cmdString[strcspn(cmdString, "\n")] = 0;
+        // Evaluate alias if found
+        evaluateAlias(&aliasStore, cmdString);
         // Replace environment variables in cmdString
         evaluateEnvironmentVariables(&envVars, cmdString);
         // strcpy(cmdString, "cd aaa/bbb/ccc/ddd");
@@ -109,10 +60,12 @@ int main(int argc, char** argv, char** env) {
             cwdString = malloc((strlen(newCwdString) + 1) * sizeof(char));
             strcpy(cwdString, newCwdString);
             free(newCwdString);
-        } else if (!strcmp(commandName, "setenv")) {
+        } else if (!strcmp(commandName, "env") || !strcmp(commandName, "setenv")) {
             exec_setenv(&envVars, cmdString);
         } else if (!strcmp(commandName, "unsetenv")) {
             exec_unsetenv(&envVars, cmdString);
+        } else if (!strcmp(commandName, "alias")) {
+            exec_alias(&aliasStore, cmdString);
         }
         printf("> %s> ", cwdString);
     }

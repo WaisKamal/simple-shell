@@ -2,11 +2,12 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include "variable_store.h"
 #include "env.h"
 #include "string_utils.h"
 
 // Fetches environment variables into envVars struct
-void loadEnvironmentVariables(char** env, struct EnvironmentVariables* envVars) {
+void loadEnvironmentVariables(char** env, struct VariableStore* envVars) {
     // Calculate number of variables and allocate enough memory
     int envCount = 0;
     while (env[envCount]) envCount++;
@@ -20,37 +21,16 @@ void loadEnvironmentVariables(char** env, struct EnvironmentVariables* envVars) 
 }
 
 // Sets the value of an environment variable
-void setEnvironmentVariable(struct EnvironmentVariables* envVars, char* name, char* value) {
-    // If variable exists, update its value
-    for (int i = 0; i < envVars->count; i++) {
-        if (!strcmp(envVars->variables[i].name, name)) {
-            envVars->variables[i].value = value;
-            return;
-        }
-    }
-    // Create a new variable if the variable does not exist
-    struct Variable* newEnvVars = malloc((envVars->count + 1) * sizeof(struct Variable));
-    for (int i = 0; i < envVars->count; i++) {
-        newEnvVars[i].name = envVars->variables[i].name;
-        newEnvVars[i].value = envVars->variables[i].value;
-    }
-    newEnvVars[envVars->count].name = name;
-    newEnvVars[envVars->count].value = value;
-    free(envVars->variables);
-    envVars->variables = newEnvVars;
-    envVars->count++;
+void setEnvironmentVariable(struct VariableStore* envVars, char* name, char* value) {
+    setVariable(envVars, name, value);
 }
 
 // Deletes an environment variable
-void removeEnvironmentVariable(struct EnvironmentVariables* envVars, char* cmdString) {
-    char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
-    strcpy(cmdStringCopy, cmdString);
-    char* commandName = strtok(cmdStringCopy, " ");
-    char* varName = strtok(NULL, " ");
+void removeEnvironmentVariable(struct VariableStore* envVars, char* name) {
     // Check if environment variable exists
     int varIndex = -1;
     for (int i = 0; i < envVars->count; i++) {
-        if (!strcmp(envVars->variables[i].name, varName)) {
+        if (!strcmp(envVars->variables[i].name, name)) {
             varIndex = i;
             break;
         }
@@ -72,7 +52,7 @@ void removeEnvironmentVariable(struct EnvironmentVariables* envVars, char* cmdSt
 }
 
 // Returns the environment variable's value if found, or an empty string otherwise
-char* getEnvironmentVariable(struct EnvironmentVariables* envVars, char* name) {
+char* getEnvironmentVariable(struct VariableStore* envVars, char* name) {
     // If variable exists, update its value
     for (int i = 0; i < envVars->count; i++) {
         if (!strcmp(envVars->variables[i].name, name)) {
@@ -82,7 +62,7 @@ char* getEnvironmentVariable(struct EnvironmentVariables* envVars, char* name) {
     return "";
 }
 
-void exec_setenv(struct EnvironmentVariables* envVars, char* cmdString) {
+void exec_setenv(struct VariableStore* envVars, char* cmdString) {
     char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
     strcpy(cmdStringCopy, cmdString);
     char* commandName = strtok(cmdStringCopy, " ");
@@ -102,11 +82,15 @@ void exec_setenv(struct EnvironmentVariables* envVars, char* cmdString) {
     }
 }
 
-void exec_unsetenv(struct EnvironmentVariables* envVars, char* cmdString) {
-    removeEnvironmentVariable(envVars, cmdString);
+void exec_unsetenv(struct VariableStore* envVars, char* cmdString) {
+    char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
+    strcpy(cmdStringCopy, cmdString);
+    char* commandName = strtok(cmdStringCopy, " ");
+    char* varName = strtok(NULL, " ");
+    removeEnvironmentVariable(envVars, varName);
 }
 
-void evaluateEnvironmentVariables(struct EnvironmentVariables* envVars, char* cmdString) {
+void evaluateEnvironmentVariables(struct VariableStore* envVars, char* cmdString) {
     // The extra space required for the parsed cmdString
     int extraChars = 0;
     // Position of dollar sign (-1 if no dollar sign encountered)
