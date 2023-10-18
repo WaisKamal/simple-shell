@@ -66,6 +66,8 @@ int main(int argc, char** argv, char** env) {
             exec_unsetenv(&envVars, cmdString);
         } else if (!strcmp(commandName, "alias")) {
             exec_alias(&aliasStore, cmdString);
+        } else if (!strcmp(commandName, "exit")) {
+            return 0;
         }
         printf("> %s> ", cwdString);
     }
