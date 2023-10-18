@@ -8,6 +8,11 @@
 #include "env.h"
 #include "alias.h"
 
+// UNIX-specific directives
+#ifndef WINDOWS
+#include <unistd.h>
+#endif
+
 char* getCommandName(char* cmdString) {
     // Copy cmdString because strtok mutates the passed string
     char* cmdStringCopy = malloc((strlen(cmdString) + 1) * sizeof(char));
@@ -165,7 +170,10 @@ int main(int argc, char** argv, char** env) {
         } else if (!strcmp(commandName, "exit")) {
             return 0;
         } else {
-            // system(cmdString);
+            #ifndef WINDOWS
+            char** args = getArgs(cmdString);
+            execve(commandName, args);
+            #endif
         }
         printf("> %s> ", cwdString);
     }
