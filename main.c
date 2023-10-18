@@ -7,6 +7,7 @@
 #include "path.h"
 #include "env.h"
 #include "alias.h"
+#include <signal.h>
 #include <sys/types.h>
 
 // UNIX-specific directives
@@ -187,6 +188,10 @@ int main(int argc, char** argv, char** env) {
                 free(chdirArg);
                 exit(127);
             } else {
+                void ctrlCHandler() {
+                    kill(0, 9);
+                }
+                signal(SIGINT, ctrlCHandler);
                 waitpid(pid, 0, 0);
             }
             #endif
