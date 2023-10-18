@@ -174,7 +174,7 @@ int main(int argc, char** argv, char** env) {
             char** args = getArgs(cmdString);
             pid_t pid = fork();
             if (pid == 0) {
-                execv(commandName, args);
+                execvpe(commandName, args, env);
                 exit(127);
             } else {
                 waitpid(pid, 0, 0);
