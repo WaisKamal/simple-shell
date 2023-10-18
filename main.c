@@ -77,7 +77,7 @@ char** getArgs(char* cmdString) {
     }
     // Allocate argument array
     char** args = malloc((argCount + 1) * sizeof(char*));
-    args[argCount] = "";
+    args[argCount] = (char* )0;
     quotePos = argStartPos = -1;
     argCount = 0;
     // Extract arguments
