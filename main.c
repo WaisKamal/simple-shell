@@ -127,7 +127,10 @@ int main(int argc, char** argv, char** env) {
     aliasStore.count = 0;
 
     // To be replaced with POSIX getcwd()
-    char* cwdString = "C:/Users/Wais/Desktop/simple-shell";
+    char* cwdString[1024];
+    #ifndef WINDOWS
+    getcwd(cwdString, sizeof(cwdString));
+    #endif
 
     // Initialize cwd
     struct Path cwd;
