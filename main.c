@@ -115,11 +115,11 @@ int main(int argc, char** argv, char** env) {
     struct VariableStore envVars;
     loadEnvironmentVariables(env, &envVars);
 
-    return 0;
-
     // Initialize alias store
     struct VariableStore aliasStore;
     aliasStore.count = 0;
+
+    return 0;
 
     // To be replaced with POSIX getcwd()
     char* cwdString = "C:/Users/Wais/Desktop/simple-shell";
