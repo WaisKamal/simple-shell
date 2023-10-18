@@ -78,11 +78,13 @@ char* exec_cd(char* cmdString, struct Path* cwd) {
     // Check if directory exists
     #ifndef WINDOWS
     DIR* dir = opendir(fullDirName);
-    if (ENOENT == errno) {
+    if (errno == ENOENT) {
         printf("Directory not found.\n");
+        free(cmdStringCopy);
         return "";
     } else if (!dir) {
         printf("An error occured. Could not open directory.\n");
+        free(cmdStringCopy);
         return "";
     }
     #endif
