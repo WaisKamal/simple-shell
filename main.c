@@ -130,7 +130,7 @@ int main(int argc, char** argv, char** env) {
     char* cwdString;
     malloc(1024 * sizeof(char));
     #ifndef WINDOWS
-    getcwd(cwdString, sizeof(cwdString));
+    getcwd(cwdString, 1024);
     #endif
 
     // Initialize cwd
