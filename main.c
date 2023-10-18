@@ -179,20 +179,20 @@ int main(int argc, char** argv, char** env) {
             #ifndef WINDOWS
             char** args = getArgs(cmdString);
             pid_t pid = fork();
-            void ctrlCHandler() {
-                kill(pid, 9);
-            }
             if (pid == 0) {
                 char* chdirArg = malloc((strlen(cwdString) + 2) * sizeof(char));
                 chdirArg[0] = '/';
                 strcpy(chdirArg + 1, cwdString);
                 chdir(chdirArg);
-                signal(SIGINT, ctrlCHandler);
                 execvp(commandName, args);
                 free(chdirArg);
                 exit(127);
             } else {
+                void ctrlCHandler() {
+                    kill(pid, 9);
+                }
                 waitpid(pid, 0, 0);
+                signal(SIGINT, ctrlCHandler);
             }
             #endif
         }
