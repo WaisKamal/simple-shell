@@ -182,7 +182,6 @@ int main(int argc, char** argv, char** env) {
                 char* chdirArg = malloc((strlen(cwdString) + 2) * sizeof(char));
                 chdirArg[0] = '/';
                 strcpy(chdirArg + 1, cwdString);
-                printf("chdirArg: %s\n", chdirArg);
                 chdir(chdirArg);
                 execvp(commandName, args);
                 free(chdirArg);
