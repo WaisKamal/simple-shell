@@ -179,8 +179,13 @@ int main(int argc, char** argv, char** env) {
             char** args = getArgs(cmdString);
             pid_t pid = fork();
             if (pid == 0) {
-                chdir(cwdString);
+                char* chdirArg = malloc((strlen(cwdString) + 2) * sizeof(char));
+                chdirArg[0] = '/';
+                strcpy(chdirArg + 1, cwdString);
+                printf("chdirArg: %s\n", chdirArg);
+                chdir(chdirArg);
                 execvp(commandName, args);
+                free(chdirArg);
                 exit(127);
             } else {
                 waitpid(pid, 0, 0);
