@@ -188,10 +188,13 @@ int main(int argc, char** argv, char** env) {
                 free(chdirArg);
                 exit(127);
             } else {
-                void ctrlCHandler() {
-                    kill(pid, 9);
+                void exitChild() {
+                    kill(0, 9);
                 }
-                signal(SIGINT, ctrlCHandler);
+                void exitParent() {
+                    kill(pid, 9)
+                }
+                signal(SIGINT, exitChild);
                 waitpid(pid, 0, 0);
             }
             #endif
