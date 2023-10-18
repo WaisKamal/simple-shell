@@ -177,7 +177,7 @@ int main(int argc, char** argv, char** env) {
                 execv(commandName, args);
                 exit(127);
             } else {
-                waitpid(pid, 0, 0)
+                waitpid(pid, 0, 0);
             }
             #endif
         }
